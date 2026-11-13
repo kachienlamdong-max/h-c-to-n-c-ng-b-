@@ -29,14 +29,18 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     setTab(initialTab);
     setError(null);
     setNotRegistered(false);
-    if (initialTab === 'admin' && !phone) {
+    if (initialTab === 'admin') {
       setPhone('0382049919');
-    } else if (initialTab === 'student' && phone === '0382049919') {
+      setPassword('');
+    } else if (phone === '0382049919') {
       setPhone('');
+      setPassword('');
     }
   }, [initialTab, isOpen]);
 
   if (!isOpen) return null;
+
+  const isAdminPhoneEntered = phone.replace(/[\s\-().+]/g, '').trim() === '0382049919';
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -139,25 +143,30 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             <div className="space-y-1.5">
               <label className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
                 <KeyRound className="w-3.5 h-3.5 text-slate-500" />
-                {tab === 'admin' ? 'Mật khẩu Admin' : 'Mật khẩu'}
+                {tab === 'admin' || isAdminPhoneEntered
+                  ? 'Mật khẩu Admin (để trống nếu chưa đặt)'
+                  : 'Mật khẩu'}
               </label>
               <input
                 type="password"
-                required
+                required={tab === 'student' && !isAdminPhoneEntered}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Nhập mật khẩu"
+                placeholder={
+                  tab === 'admin' || isAdminPhoneEntered
+                    ? 'Không bắt buộc nếu chưa đổi mật khẩu'
+                    : 'Nhập mật khẩu'
+                }
                 className="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
               />
             </div>
 
-            {tab === 'admin' && (
-              <div className="rounded-xl bg-slate-50 border border-slate-200 p-3 flex items-start gap-2 text-xs text-slate-600">
+            {(tab === 'admin' || isAdminPhoneEntered) && (
+              <div className="rounded-xl bg-sky-50 border border-sky-200 p-3 flex items-start gap-2 text-xs text-sky-900">
                 <Shield className="w-4 h-4 text-sky-600 shrink-0 mt-0.5" />
                 <span>
-                  SĐT Admin: <strong className="font-math">0382049919</strong> · Mật khẩu mặc định
-                  ban đầu: <strong className="font-math">0382049919</strong> (có thể đổi trong bảng
-                  điều khiển).
+                  Nhập SĐT Admin <strong className="font-math">0382049919</strong> và bấm nút bên
+                  dưới để vào thẳng Bảng điều khiển Quản trị.
                 </span>
               </div>
             )}
@@ -189,13 +198,13 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               <Lock className="w-4 h-4" />
               {loading
                 ? 'Đang đăng nhập...'
-                : tab === 'admin'
+                : tab === 'admin' || isAdminPhoneEntered
                   ? 'Vào Bảng điều khiển Admin'
                   : 'Đăng nhập VIP'}
             </button>
           </form>
 
-          {tab === 'student' && (
+          {tab === 'student' && !isAdminPhoneEntered && (
             <div className="pt-2 border-t border-slate-200 flex flex-col gap-2 text-center">
               <button
                 type="button"

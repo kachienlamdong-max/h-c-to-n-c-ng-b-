@@ -125,7 +125,8 @@ async function startServer() {
       return;
     }
 
-    if (!password || !verifyPassword(password, user.passwordHash)) {
+    const requiresPassword = user.role !== 'admin' || Boolean(user.customPasswordSet);
+    if (requiresPassword && (!password || !verifyPassword(password, user.passwordHash))) {
       res.status(401).json({
         code: 'INVALID_PASSWORD',
         error: 'Mật khẩu chưa chính xác. Vui lòng kiểm tra lại.',
@@ -321,7 +322,7 @@ async function startServer() {
     const db = readDb();
     const index = db.users.findIndex((u) => u.id === id && u.role === 'customer');
     if (index === -1) {
-      res.status(404).json({ error: 'Customer not found.' });
+      res.status(404).json({ error: 'Không tìm thấy khách hàng.' });
       return;
     }
     db.users.splice(index, 1);
@@ -333,13 +334,13 @@ async function startServer() {
     const id = req.params.id;
     const status = req.body?.status;
     if (status !== 'approved' && status !== 'rejected' && status !== 'pending') {
-      res.status(400).json({ error: 'Invalid status' });
+      res.status(400).json({ error: 'Trạng thái không hợp lệ' });
       return;
     }
     const db = readDb();
     const item = db.paymentRequests.find((r) => r.id === id);
     if (!item) {
-      res.status(404).json({ error: 'Payment request not found.' });
+      res.status(404).json({ error: 'Không tìm thấy yêu cầu thanh toán.' });
       return;
     }
     item.status = status;
@@ -350,16 +351,17 @@ async function startServer() {
   app.post('/api/admin/change-password', attachUser, requireAdmin, (req: AuthedRequest, res) => {
     const newPassword = String(req.body?.newPassword ?? '').trim();
     if (newPassword.length < 4) {
-      res.status(400).json({ error: 'Admin password must be at least 4 characters.' });
+      res.status(400).json({ error: 'Mật khẩu Admin phải có ít nhất 4 ký tự.' });
       return;
     }
     const db = readDb();
     const admin = db.users.find((u) => u.id === req.authUser!.id);
     if (!admin) {
-      res.status(404).json({ error: 'Admin not found' });
+      res.status(404).json({ error: 'Không tìm thấy tài khoản Admin' });
       return;
     }
     admin.passwordHash = hashPassword(newPassword);
+    admin.customPasswordSet = true;
     writeDb(db);
     res.json({ updated: true });
   });

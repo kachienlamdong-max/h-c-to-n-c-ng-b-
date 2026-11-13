@@ -21,6 +21,7 @@ export interface StoredUser {
   name: string;
   role: 'admin' | 'customer';
   passwordHash: string;
+  customPasswordSet?: boolean;
   isVip: boolean;
   status: 'active' | 'suspended';
   plan: 'lifetime' | 'admin';
