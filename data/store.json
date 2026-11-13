@@ -1,0 +1,30 @@
+{
+  "users": [
+    {
+      "id": "admin-root",
+      "phone": "0382049919",
+      "name": "System Admin",
+      "role": "admin",
+      "passwordHash": "0fb80cc999df68dcf04326960f7830b1:2dbaafec0a8407f1655a0f1a753a1394c368a6e400d9f16031c843920063bb732516dcb99081b34d5148fb11a5d04101aa6d5b55a9d4b8b67e22d5c6ba10ce83",
+      "isVip": true,
+      "status": "active",
+      "plan": "admin",
+      "paymentRef": "Administrator Account",
+      "createdAt": "2026-11-13T14:58:01.292Z",
+      "progress": {
+        "stars": 0,
+        "streak": 0,
+        "bestStreak": 0,
+        "solvedCount": 0,
+        "byOp": {
+          "add": 0,
+          "sub": 0,
+          "mul": 0,
+          "div": 0
+        }
+      },
+      "lastLoginAt": "2026-11-13T14:58:08.580Z"
+    }
+  ],
+  "paymentRequests": []
+}
