@@ -366,6 +366,20 @@ async function startServer() {
     res.json({ updated: true });
   });
 
+  app.use('/api', (_req, res) => {
+    res.status(404).json({ error: 'Không tìm thấy đường dẫn API.' });
+  });
+
+  app.use((err: unknown, req: Request, res: Response, next: NextFunction) => {
+    if (req.path.startsWith('/api')) {
+      res.status(500).json({
+        error: err instanceof Error ? err.message : 'Lỗi máy chủ nội bộ.',
+      });
+      return;
+    }
+    next(err);
+  });
+
   if (process.env.NODE_ENV !== 'production') {
     const { createServer: createViteServer } = await import('vite');
     const vite = await createViteServer({
